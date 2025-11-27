@@ -1,0 +1,136 @@
+name: Backend CI
+
+# Este workflow se ejecuta en cada push y pull request a las ramas principales
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**/*.java'
+      - '**/pom.xml'
+      - '**/application.yml'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**/*.java'
+      - '**/pom.xml'
+      - '**/application.yml'
+      - '.github/workflows/backend-ci.yml'
+
+# Permite cancelar ejecuciones en progreso si se hace un nuevo push
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job principal para compilar y testear el backend
+  build-and-test:
+    name: Build and Test Backend
+    runs-on: ubuntu-latest
+    
+    # Estrategia de matriz para probar con múltiples versiones de Java (opcional)
+    strategy:
+      matrix:
+        java-version: [17]
+    
+    steps:
+      # Paso 1: Checkout del código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for better analysis
+    
+      # Paso 2: Configurar JDK
+      # Usa la acción oficial de setup-java para configurar el entorno Java
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'  # Eclipse Temurin (OpenJDK)
+          cache: 'maven'  # Cachea las dependencias de Maven para builds más rápidos
+    
+      # Paso 3: Verificar versión de Java y Maven
+      # Útil para debugging y verificación
+      - name: Verify Java and Maven versions
+        run: |
+          echo "Java version:"
+          java -version
+          echo "Maven version:"
+          mvn -version
+    
+      # Paso 4: Ejecutar tests
+      # Maven ejecuta todos los tests unitarios e integración
+      - name: Run tests
+        run: mvn clean test
+        env:
+          # Variables de entorno para tests (si es necesario)
+          SPRING_PROFILES_ACTIVE: test
+    
+      # Paso 5: Generar reporte de cobertura (opcional)
+      # Si tienes JaCoCo configurado, genera el reporte
+      - name: Generate test coverage report
+        run: mvn jacoco:report
+        continue-on-error: true  # No falla si JaCoCo no está configurado
+    
+      # Paso 6: Compilar y empaquetar el proyecto
+      # Crea los JARs de cada microservicio sin ejecutar tests (ya se ejecutaron antes)
+      - name: Build and package
+        run: mvn clean package -DskipTests
+        env:
+          SPRING_PROFILES_ACTIVE: prod
+    
+      # Paso 7: Subir artefactos (JARs compilados)
+      # Guarda los artefactos para uso posterior o deployment
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jars
+          path: |
+            */target/*.jar
+            !*/target/*-sources.jar
+            !*/target/*-javadoc.jar
+          retention-days: 7  # Mantiene los artefactos por 7 días
+    
+      # Paso 8: Subir reportes de test (opcional)
+      # Si hay reportes de tests, los sube como artefactos
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        if: always()  # Se ejecuta incluso si los tests fallan
+        with:
+          name: test-reports
+          path: |
+            */target/surefire-reports/**
+            */target/failsafe-reports/**
+          retention-days: 7
+        continue-on-error: true
+
+  # Job adicional para validar la estructura del proyecto
+  validate-project-structure:
+    name: Validate Project Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: 'maven'
+      
+      # Valida que el proyecto compile correctamente
+      - name: Validate Maven project
+        run: mvn validate
+      
+      # Verifica que todos los módulos estén correctamente configurados
+      - name: Check Maven modules
+        run: |
+          echo "Verificando estructura de módulos..."
+          mvn dependency:tree -Dverbose=false | head -20
+

@@ -1,0 +1,64 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/microshopdb
+    driver-class-name: org.postgresql.Driver
+    username: microshop
+    password: microshop123
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+    # Intervalo de actualización del registro (segundos)
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    # Intervalo de heartbeat (segundos)
+    lease-renewal-interval-in-seconds: 30
+    # Tiempo antes de considerar la instancia como no disponible (segundos)
+    lease-expiration-duration-in-seconds: 90
+    # Nombre de la instancia
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Configuración JWT
+jwt:
+  secret: microshop-secret-key-for-jwt-token-generation-minimum-256-bits-required-for-hmac-sha-256-algorithm
+  expiration: 86400000 # 24 horas en milisegundos
+

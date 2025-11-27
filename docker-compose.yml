@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: microshop-postgres
+    environment:
+      POSTGRES_USER: microshop
+      POSTGRES_PASSWORD: microshop123
+      POSTGRES_DB: microshopdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U microshop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microshop-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  microshop-network:
+    driver: bridge
+

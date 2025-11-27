@@ -1,0 +1,158 @@
+name: Frontend CI
+
+# Este workflow se ejecuta en cada push y pull request a las ramas principales
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+
+# Permite cancelar ejecuciones en progreso si se hace un nuevo push
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job principal para compilar y testear el frontend
+  build-and-test:
+    name: Build and Test Frontend
+    runs-on: ubuntu-latest
+    
+    # Estrategia de matriz para probar con múltiples versiones de Node (opcional)
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    defaults:
+      run:
+        working-directory: ./frontend  # Todos los comandos se ejecutan en el directorio frontend
+    
+    steps:
+      # Paso 1: Checkout del código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for better analysis
+    
+      # Paso 2: Configurar Node.js
+      # Usa la acción oficial de setup-node para configurar el entorno Node.js
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'  # Cachea node_modules para builds más rápidos
+          cache-dependency-path: frontend/package-lock.json
+    
+      # Paso 3: Verificar versiones de Node y npm
+      # Útil para debugging y verificación
+      - name: Verify Node.js and npm versions
+        run: |
+          echo "Node version:"
+          node --version
+          echo "npm version:"
+          npm --version
+    
+      # Paso 4: Instalar dependencias
+      # Instala todas las dependencias definidas en package.json
+      - name: Install dependencies
+        run: npm ci  # npm ci es más rápido y confiable que npm install en CI
+        working-directory: ./frontend
+    
+      # Paso 5: Ejecutar linter (ESLint)
+      # Verifica que el código cumpla con las reglas de estilo
+      - name: Run linter
+        run: npm run lint
+        working-directory: ./frontend
+        continue-on-error: true  # No falla el build si hay warnings del linter
+    
+      # Paso 6: Ejecutar tests (si existen)
+      # Ejecuta los tests unitarios y de integración
+      - name: Run tests
+        run: npm test -- --coverage --watchAll=false
+        working-directory: ./frontend
+        continue-on-error: true  # Continúa aunque no haya tests configurados
+        env:
+          CI: true  # Modo CI para tests
+    
+      # Paso 7: Build del proyecto
+      # Compila el proyecto React para producción usando Vite
+      - name: Build project
+        run: npm run build
+        working-directory: ./frontend
+        env:
+          NODE_ENV: production
+    
+      # Paso 8: Verificar que el build se completó correctamente
+      # Comprueba que se generaron los archivos de build
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: Directorio dist no encontrado"
+            exit 1
+          fi
+          echo "Build completado exitosamente"
+          ls -lah dist/
+        working-directory: ./frontend
+    
+      # Paso 9: Subir artefactos del build
+      # Guarda los archivos compilados para uso posterior o deployment
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-${{ matrix.node-version }}
+          path: frontend/dist
+          retention-days: 7  # Mantiene los artefactos por 7 días
+    
+      # Paso 10: Subir reportes de cobertura (si existen)
+      # Si hay reportes de cobertura de tests, los sube como artefactos
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()  # Se ejecuta incluso si los tests fallan
+        with:
+          name: coverage-reports-${{ matrix.node-version }}
+          path: frontend/coverage
+          retention-days: 7
+        continue-on-error: true
+
+  # Job adicional para validar la estructura del proyecto
+  validate-project-structure:
+    name: Validate Project Structure
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      # Verifica que package.json sea válido
+      - name: Validate package.json
+        run: |
+          echo "Verificando package.json..."
+          node -e "require('./package.json')"
+      
+      # Verifica que las dependencias se puedan instalar
+      - name: Check dependencies
+        run: |
+          echo "Verificando dependencias..."
+          npm ci --dry-run
+
