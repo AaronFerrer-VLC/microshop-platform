@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {
-        "spring.autoconfigure.exclude=org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration,org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration,org.springframework.cloud.netflix.eureka.EurekaServiceRegistryAutoConfiguration"
+        "spring.autoconfigure.exclude=org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration,org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration,org.springframework.cloud.netflix.eureka.EurekaServiceRegistryAutoConfiguration,org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"
     }
 )
 @AutoConfigureMockMvc

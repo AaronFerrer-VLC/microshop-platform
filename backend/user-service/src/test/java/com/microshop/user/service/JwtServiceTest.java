@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
  */
 @SpringBootTest(
     properties = {
-        "spring.autoconfigure.exclude=org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration,org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration,org.springframework.cloud.netflix.eureka.EurekaServiceRegistryAutoConfiguration"
+        "spring.autoconfigure.exclude=org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration,org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration,org.springframework.cloud.netflix.eureka.EurekaServiceRegistryAutoConfiguration,org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"
     }
 )
 @ActiveProfiles("test")
