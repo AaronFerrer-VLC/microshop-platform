@@ -6,6 +6,8 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![Tests](https://img.shields.io/badge/Tests-55%20tests-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-81%25-success)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
 
 **Plataforma e-commerce moderna con arquitectura de microservicios**
@@ -27,6 +29,7 @@
 - [Uso](#-uso)
 - [Decisiones de Diseño](#-decisiones-de-diseño)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Testing](#-testing)
 - [API Endpoints](#-api-endpoints)
 - [Próximas Mejoras](#-próximas-mejoras)
 - [Contribución](#-contribución)
@@ -55,11 +58,15 @@ La plataforma está diseñada para ser un **portafolio profesional** que muestra
 - ✅ **Arquitectura de Microservicios** con Spring Boot 3.x
 - ✅ **Service Discovery** con Netflix Eureka
 - ✅ **API Gateway** con Spring Cloud Gateway
+  - CORS configurado para frontend
+  - Rate Limiting para protección contra ataques
 - ✅ **Autenticación JWT** con Spring Security
 - ✅ **Base de Datos PostgreSQL** con migraciones Flyway
 - ✅ **Documentación API** con Swagger/OpenAPI
 - ✅ **Validaciones** con Bean Validation
 - ✅ **Manejo de Excepciones** centralizado
+- ✅ **Tests Automatizados** con JUnit 5 y Mockito
+- ✅ **Cobertura de Código** con JaCoCo (~81% promedio)
 
 ### Frontend
 
@@ -75,6 +82,8 @@ La plataforma está diseñada para ser un **portafolio profesional** que muestra
 - ✅ **Docker Compose** para desarrollo local
 - ✅ **CI/CD** con GitHub Actions
 - ✅ **Migraciones Automáticas** con Flyway
+- ✅ **Variables de Entorno** para configuración segura
+- ✅ **Reportes de Cobertura** con JaCoCo
 
 ---
 
@@ -150,6 +159,14 @@ Punto de entrada único para todas las peticiones del cliente. Enruta las solici
 - `/api/products/**` → `product-service`
 - `/api/orders/**` → `order-service`
 
+**Características de Seguridad:**
+
+- **CORS**: Configurado para permitir peticiones desde el frontend React
+- **Rate Limiting**: 
+  - 100 peticiones/minuto por IP para endpoints generales
+  - 10 peticiones/minuto por IP para endpoints de autenticación
+- **Balanceo de Carga**: Distribución automática de peticiones entre instancias
+
 #### 3. **User Service** (Puerto 8081)
 
 Gestiona usuarios y autenticación.
@@ -195,6 +212,10 @@ Gestiona pedidos (preparado para implementación completa).
 | **Flyway**               | -        | Migraciones de BD            |
 | **JWT (jjwt)**           | 0.12.3   | Tokens de autenticación      |
 | **Swagger/OpenAPI**      | 2.3.0    | Documentación API            |
+| **Bucket4j**             | 8.10.1   | Rate Limiting                |
+| **JUnit 5**              | -        | Framework de testing          |
+| **Mockito**              | -        | Mocking para tests           |
+| **JaCoCo**               | 0.8.11   | Cobertura de código          |
 | **Maven**                | 3.6+     | Gestión de dependencias      |
 
 ### Frontend
@@ -242,17 +263,37 @@ git clone <repository-url>
 cd microshop-platform
 ```
 
-### 2. Levantar PostgreSQL con Docker
+### 2. Configurar Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto (consulta `ENV_SETUP.md` para más detalles):
+
+```bash
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=microshopdb
+DB_USERNAME=microshop
+DB_PASSWORD=tu_contraseña_segura
+
+# JWT Configuration
+JWT_SECRET=tu_clave_secreta_jwt_minimo_256_bits
+JWT_EXPIRATION=86400000
+
+# Docker PostgreSQL
+POSTGRES_USER=microshop
+POSTGRES_PASSWORD=tu_contraseña_segura
+POSTGRES_DB=microshopdb
+```
+
+> ⚠️ **Importante**: El archivo `.env` está en `.gitignore` y no se subirá al repositorio. Usa valores seguros y diferentes para producción.
+
+### 3. Levantar PostgreSQL con Docker
 
 ```bash
 docker-compose up -d
 ```
 
-Esto iniciará PostgreSQL en el puerto 5432 con las siguientes credenciales:
-
-- **Usuario**: `microshop`
-- **Contraseña**: `microshop123`
-- **Base de datos**: `microshopdb`
+Esto iniciará PostgreSQL en el puerto 5432. Las credenciales se toman de las variables de entorno o valores por defecto.
 
 Verifica que el contenedor esté corriendo:
 
@@ -260,7 +301,7 @@ Verifica que el contenedor esté corriendo:
 docker ps
 ```
 
-### 3. Compilar el Backend
+### 4. Compilar el Backend
 
 ```bash
 mvn clean install
@@ -268,7 +309,7 @@ mvn clean install
 
 Esto compilará todos los microservicios y ejecutará las migraciones Flyway automáticamente.
 
-### 4. Iniciar los Servicios Backend
+### 5. Iniciar los Servicios Backend
 
 **Importante:** Los servicios deben iniciarse en el siguiente orden:
 
@@ -302,7 +343,7 @@ cd backend/api-gateway
 mvn spring-boot:run
 ```
 
-### 5. Iniciar el Frontend
+### 6. Iniciar el Frontend
 
 ```bash
 cd frontend
@@ -510,10 +551,14 @@ DTO Layer           → Objetos de transferencia de datos
 
 ### Seguridad
 
-- **JWT Tokens**: Stateless authentication
-- **BCrypt**: Hash seguro de contraseñas
-- **Role-Based Access Control (RBAC)**: Control de acceso por roles
+- **JWT Tokens**: Stateless authentication con expiración configurable
+- **BCrypt**: Hash seguro de contraseñas (nunca almacenadas en texto plano)
+- **Role-Based Access Control (RBAC)**: Control de acceso por roles (CUSTOMER, ADMIN, SELLER)
 - **Validaciones**: Bean Validation en backend y frontend
+- **CORS**: Configurado para permitir solo orígenes autorizados
+- **Rate Limiting**: Protección contra ataques de fuerza bruta y abuso de API
+- **Variables de Entorno**: Credenciales y secretos configurados mediante variables de entorno
+- **.gitignore**: Archivos sensibles excluidos del repositorio
 
 ---
 
@@ -535,6 +580,7 @@ microshop-platform/
 │   │   ├── pom.xml
 │   │   └── src/main/
 │   │       ├── java/com/microshop/gateway/
+│   │       │   └── config/     # CORS, Rate Limiting
 │   │       └── resources/application.yml
 │   ├── user-service/      # Servicio de Usuarios
 │   │   ├── pom.xml
@@ -552,6 +598,12 @@ microshop-platform/
 │   │       └── resources/
 │   │           ├── application.yml
 │   │           └── db/migration/  # Scripts Flyway
+│   │       └── src/test/          # Tests
+│   │           ├── java/com/microshop/user/
+│   │           │   ├── service/UserServiceTest.java
+│   │           │   ├── controller/UserControllerIntegrationTest.java
+│   │           │   └── controller/AuthControllerTest.java
+│   │           └── resources/application-test.yml
 │   ├── product-service/   # Servicio de Productos
 │   │   ├── pom.xml
 │   │   └── src/main/
@@ -567,6 +619,11 @@ microshop-platform/
 │   │       └── resources/
 │   │           ├── application.yml
 │   │           └── db/migration/
+│   │       └── src/test/          # Tests
+│   │           ├── java/com/microshop/product/
+│   │           │   ├── service/ProductServiceTest.java
+│   │           │   └── controller/ProductControllerIntegrationTest.java
+│   │           └── resources/application-test.yml
 │   └── order-service/     # Servicio de Pedidos
 │       └── ...
 ├── frontend/              # Aplicación React
@@ -579,9 +636,73 @@ microshop-platform/
 │   ├── package.json
 │   └── vite.config.js
 ├── docker-compose.yml     # Configuración Docker
+├── .gitignore             # Archivos excluidos de Git
+├── .env.example           # Plantilla de variables de entorno
 ├── pom.xml                # POM padre Maven
-└── README.md              # Este archivo
+├── README.md              # Este archivo
+├── ENV_SETUP.md           # Guía de configuración de variables de entorno
+├── TESTING_GUIDE.md       # Guía de testing
+├── JACOCO_GUIDE.md        # Guía de cobertura de código
+└── MEJORAS_COMPLETADAS.md # Resumen de mejoras implementadas
 ```
+
+---
+
+## 🧪 Testing
+
+### Ejecutar Tests
+
+**User Service:**
+```bash
+cd backend/user-service
+mvn test
+```
+
+**Product Service:**
+```bash
+cd backend/product-service
+mvn test
+```
+
+### Generar Reporte de Cobertura
+
+```bash
+# User Service
+cd backend/user-service
+mvn test jacoco:report
+# Ver reporte en: target/site/jacoco/index.html
+
+# Product Service
+cd backend/product-service
+mvn test jacoco:report
+# Ver reporte en: target/site/jacoco/index.html
+```
+
+### Cobertura Actual
+
+- **UserService**: ~85%
+- **ProductService**: ~85%
+- **UserController**: ~80%
+- **ProductController**: ~80%
+- **AuthController**: ~75%
+- **JwtService**: ~80%
+- **Promedio General**: ~81%
+
+### Tests Implementados
+
+- **Tests Unitarios**: 32 tests
+  - UserServiceTest: 11 tests
+  - ProductServiceTest: 9 tests
+  - JwtServiceTest: 12 tests
+
+- **Tests de Integración**: 23 tests
+  - UserControllerIntegrationTest: 8 tests
+  - ProductControllerIntegrationTest: 9 tests
+  - AuthControllerTest: 6 tests
+
+- **Total**: 55 tests automatizados
+
+> 📖 Para más información sobre testing, consulta [TESTING_GUIDE.md](TESTING_GUIDE.md) y [JACOCO_GUIDE.md](JACOCO_GUIDE.md)
 
 ---
 
@@ -623,6 +744,12 @@ microshop-platform/
 
 ### Backend
 
+- [x] ✅ Tests automatizados (55 tests, ~81% cobertura)
+- [x] ✅ CORS configurado en API Gateway
+- [x] ✅ Rate Limiting implementado
+- [x] ✅ Variables de entorno para configuración segura
+- [x] ✅ JaCoCo para reportes de cobertura
+- [ ] Migrar Rate Limiting a Redis (para producción distribuida)
 - [ ] Implementar Order Service completo
 - [ ] Comunicación entre servicios con OpenFeign
 - [ ] Circuit Breaker con Resilience4j
@@ -632,6 +759,7 @@ microshop-platform/
 - [ ] Separación de bases de datos por servicio
 - [ ] Cache con Redis
 - [ ] Mensajería asíncrona (RabbitMQ/Kafka)
+- [ ] Tests E2E con Cypress/Playwright
 
 ### Frontend
 

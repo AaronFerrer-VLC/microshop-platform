@@ -39,7 +39,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     fetch-registry: true
     register-with-eureka: true
     # Intervalo de actualización del registro (segundos)
@@ -61,4 +61,12 @@ management:
   endpoint:
     health:
       show-details: always
+
+# Configuración CORS (también configurado en CorsConfig.java)
+# Los orígenes permitidos se configuran en el código para mayor flexibilidad
+cors:
+  allowed-origins:
+    - http://localhost:5173
+    - http://localhost:3000
+    - http://localhost:5174
 

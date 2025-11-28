@@ -5,10 +5,10 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/microshopdb
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:microshopdb}
     driver-class-name: org.postgresql.Driver
-    username: microshop
-    password: microshop123
+    username: ${DB_USERNAME:microshop}
+    password: ${DB_PASSWORD:microshop123}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
@@ -38,7 +38,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     fetch-registry: true
     register-with-eureka: true
     # Intervalo de actualización del registro (segundos)
@@ -60,6 +60,6 @@ management:
 
 # Configuración JWT
 jwt:
-  secret: microshop-secret-key-for-jwt-token-generation-minimum-256-bits-required-for-hmac-sha-256-algorithm
-  expiration: 86400000 # 24 horas en milisegundos
+  secret: ${JWT_SECRET:microshop-secret-key-for-jwt-token-generation-minimum-256-bits-required-for-hmac-sha-256-algorithm}
+  expiration: ${JWT_EXPIRATION:86400000} # 24 horas en milisegundos
 

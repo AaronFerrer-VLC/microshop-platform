@@ -1,0 +1,130 @@
+# Java
+*.class
+*.log
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle (por si acaso)
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Spring Boot
+application-local.yml
+application-prod.yml
+application-dev.yml
+application-*.yml
+!application.yml
+!application.yml.example
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+!.env.example
+
+# Logs
+logs/
+*.log
+log/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Node.js / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+dist/
+dist-ssr/
+*.local
+
+# Frontend build
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Secrets and credentials
+secrets/
+credentials/
+*.pem
+*.key
+*.cert
+*.jks
+*.p12
+
+# Flyway (si hay problemas de checksum)
+flyway-repair/
+
+# Docker
+docker-compose.override.yml
+
+# CI/CD
+.github/workflows/secrets.yml
+
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output/
+
+# Test results
+test-results/
+*.test-result
+

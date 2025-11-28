@@ -8,7 +8,7 @@ spring:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:microshopdb}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:microshop}
-    password: ${DB_PASSWORD:microshop123}
+    password: ${DB_PASSWORD:change_me}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
@@ -18,8 +18,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -32,8 +32,7 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0
-    validate-on-migrate: false
-    repair-on-migrate: true
+    validate-on-migrate: true
 
 eureka:
   client:
@@ -41,15 +40,11 @@ eureka:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     fetch-registry: true
     register-with-eureka: true
-    # Intervalo de actualización del registro (segundos)
     registry-fetch-interval-seconds: 30
   instance:
     prefer-ip-address: true
-    # Intervalo de heartbeat (segundos)
     lease-renewal-interval-in-seconds: 30
-    # Tiempo antes de considerar la instancia como no disponible (segundos)
     lease-expiration-duration-in-seconds: 90
-    # Nombre de la instancia
     instance-id: ${spring.application.name}:${server.port}
 
 management:
@@ -68,4 +63,9 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
     try-it-out-enabled: true
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.microshop: ${LOG_LEVEL:INFO}
 

@@ -6,10 +6,10 @@ services:
     container_name: microshop-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-microshop}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-microshop123}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
       POSTGRES_DB: ${POSTGRES_DB:-microshopdb}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
