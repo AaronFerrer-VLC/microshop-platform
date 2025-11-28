@@ -23,6 +23,11 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
+    "eureka.client.enabled=false",
+    "eureka.client.register-with-eureka=false",
+    "eureka.client.fetch-registry=false",
+    "spring.cloud.discovery.enabled=false",
+    "spring.cloud.service-registry.auto-registration.enabled=false",
     "jwt.secret=test-secret-key-for-jwt-token-generation-minimum-256-bits-required-for-hmac-sha-256-algorithm",
     "jwt.expiration=3600000" // 1 hora para tests
 })
