@@ -20,7 +20,11 @@ import static org.mockito.Mockito.when;
  * @author Microshop Platform
  * @version 1.0.0
  */
-@SpringBootTest
+@SpringBootTest(
+    properties = {
+        "spring.autoconfigure.exclude=org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration,org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration,org.springframework.cloud.netflix.eureka.EurekaServiceRegistryAutoConfiguration"
+    }
+)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
     "eureka.client.enabled=false",
@@ -28,6 +32,7 @@ import static org.mockito.Mockito.when;
     "eureka.client.fetch-registry=false",
     "spring.cloud.discovery.enabled=false",
     "spring.cloud.service-registry.auto-registration.enabled=false",
+    "spring.cloud.config.enabled=false",
     "jwt.secret=test-secret-key-for-jwt-token-generation-minimum-256-bits-required-for-hmac-sha-256-algorithm",
     "jwt.expiration=3600000" // 1 hora para tests
 })

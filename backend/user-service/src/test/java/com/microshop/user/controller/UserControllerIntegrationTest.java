@@ -27,7 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Microshop Platform
  * @version 1.0.0
  */
-@SpringBootTest
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "spring.autoconfigure.exclude=org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration,org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration,org.springframework.cloud.netflix.eureka.EurekaServiceRegistryAutoConfiguration"
+    }
+)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
@@ -35,7 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "eureka.client.register-with-eureka=false",
     "eureka.client.fetch-registry=false",
     "spring.cloud.discovery.enabled=false",
-    "spring.cloud.service-registry.auto-registration.enabled=false"
+    "spring.cloud.service-registry.auto-registration.enabled=false",
+    "spring.cloud.config.enabled=false"
 })
 @Transactional
 @DisplayName("UserController Integration Tests")
