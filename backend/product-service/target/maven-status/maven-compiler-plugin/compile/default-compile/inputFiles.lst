@@ -1,0 +1,11 @@
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\dto\ProductResponseDTO.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\util\EntityMapper.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\ProductServiceApplication.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\controller\ProductController.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\config\OpenApiConfig.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\dto\ProductRequestDTO.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\service\ProductService.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\exception\GlobalExceptionHandler.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\exception\ProductNotFoundException.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\repository\ProductRepository.java
+C:\Users\aaron\microshop-platform\backend\product-service\src\main\java\com\microshop\product\model\Product.java

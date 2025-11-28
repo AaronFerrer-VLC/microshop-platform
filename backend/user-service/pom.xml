@@ -9,6 +9,7 @@
         <groupId>com.microshop</groupId>
         <artifactId>microshop-platform</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>user-service</artifactId>

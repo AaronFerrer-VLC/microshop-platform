@@ -2,7 +2,6 @@ package com.microshop.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 /**
  * Clase principal del servicio de pedidos.
@@ -13,7 +12,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
  * @version 1.0.0
  */
 @SpringBootApplication
-@EnableEurekaClient
 public class OrderServiceApplication {
 
     public static void main(String[] args) {

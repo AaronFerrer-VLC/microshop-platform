@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Ruta para el servicio de usuarios
+        # Ejemplo: /api/users -> user-service/users
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+        # Ruta para el servicio de productos
+        # Ejemplo: /api/products -> product-service/products
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - StripPrefix=1
+        # Ruta para el servicio de pedidos
+        # Ejemplo: /api/orders -> order-service/orders
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+    # Intervalo de actualización del registro (segundos)
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    # Intervalo de heartbeat (segundos)
+    lease-renewal-interval-in-seconds: 30
+    # Tiempo antes de considerar la instancia como no disponible (segundos)
+    lease-expiration-duration-in-seconds: 90
+    # Nombre de la instancia
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+

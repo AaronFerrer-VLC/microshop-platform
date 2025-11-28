@@ -224,8 +224,12 @@ Antes de comenzar, asegúrate de tener instalado:
 - **JDK 17** o superior
 - **Maven 3.6+**
 - **Node.js 18+** y **npm**
-- **Docker** y **Docker Compose**
+- **Docker** y **Docker Compose** (o PostgreSQL local)
 - **Git**
+
+> 📖 **¿No tienes todo instalado?** Consulta la [Guía de Instalación Detallada](INSTALACION.md) para instrucciones paso a paso.
+
+> ✅ **Verificar instalación:** Ejecuta `.\verificar-instalacion.ps1` en PowerShell para verificar que todo esté correctamente configurado.
 
 ---
 
@@ -649,7 +653,7 @@ microshop-platform/
 
 ---
 
-## 🤝 Contribución
+## Contribución
 
 Este es un proyecto de portafolio profesional. Las contribuciones son bienvenidas.
 
@@ -684,7 +688,7 @@ Para preguntas o sugerencias, abre un issue en el repositorio.
 
 <div align="center">
 
-**Desarrollado con ❤️ usando Spring Boot, Spring Cloud y React**
+**Desarrollado usando Spring Boot, Spring Cloud y React**
 
 ⭐ Si te gusta este proyecto, dale una estrella!
 

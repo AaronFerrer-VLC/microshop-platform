@@ -1,0 +1,36 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  instance:
+    hostname: localhost
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+  client:
+    # El servidor Eureka no se registra a sí mismo
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    # Configuración del servidor
+    server:
+      # Tiempo de espera antes de expirar una instancia (ms)
+      eviction-interval-timer-in-ms: 60000
+      # Habilitar self-preservation (protección en caso de red lenta)
+      enable-self-preservation: true
+      # Porcentaje mínimo de renovaciones necesarias
+      renewal-percent-threshold: 0.85
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
